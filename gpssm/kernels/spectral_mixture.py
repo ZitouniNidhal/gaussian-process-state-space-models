@@ -16,8 +16,8 @@ class SpectralMixtureKernel(Kernel):
         X = self._ensure_2d(X)
         if Y is None:
             Y = X
-        dists = np.abs(X[:, None, :] - Y[None, :, :])
+        dists = np.linalg.norm(X[:, None, :] - Y[None, :, :], axis=-1)
         kernel = np.zeros((len(X), len(Y)))
         for mean, var in zip(self.means, self.variances):
             kernel += np.exp(-0.5 * (dists ** 2) / (self.lengthscale ** 2)) * np.cos(2 * np.pi * mean * dists)
-        return self.variance * kernel.sum(axis=-1)
+        return self.variance * kernel
