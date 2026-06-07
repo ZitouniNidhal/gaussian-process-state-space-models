@@ -25,3 +25,7 @@ class RecognitionModel:
         self.weights, residuals, rank, s = np.linalg.lstsq(inputs, targets, rcond=None)
         self.bias = np.zeros(self.latent_dim)
         return self
+
+    def project(self, inputs):
+        """Project inputs into latent space using the learned linear mapping."""
+        return self.encode(inputs)
