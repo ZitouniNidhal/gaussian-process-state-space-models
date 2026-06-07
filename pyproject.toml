@@ -15,3 +15,13 @@ dependencies = [
 
 [project.urls]
 "Homepage" = "https://github.com/ZitouniNidhal/gaussian-process-state-space-models"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+tool.pytest.ini_options = {
+    minversion = "7.0",
+    addopts = "-q",
+    python_files = ["test_*.py"],
+}

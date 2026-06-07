@@ -42,3 +42,19 @@ predictions = model.predict(X)
 ## Documentation
 
 See `docs/source/index.rst` for documentation sources and tutorials.
+
+## Tests
+
+Run the unit tests with:
+
+```bash
+python -m pytest
+```
+
+## Scripts
+
+Train a model using the training script:
+
+```bash
+python scripts/training/train.py --model variational --kernel matern --n-points 120
+```
