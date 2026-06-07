@@ -29,6 +29,16 @@ model.fit(X, y)
 predictions = model.predict(X)
 ```
 
+```python
+from gpssm import models, datasets
+from gpssm.kernels import RBFKernel
+
+X, y = datasets.generate_synthetic_linear(100)
+model = models.VariationalGPModel(kernel=RBFKernel(), n_inducing=15)
+model.fit(X, y)
+predictions = model.predict(X)
+```
+
 ## Documentation
 
 See `docs/source/index.rst` for documentation sources and tutorials.
