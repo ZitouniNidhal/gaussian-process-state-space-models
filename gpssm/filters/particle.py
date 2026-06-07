@@ -19,12 +19,14 @@ class ParticleFilter:
         self.weights = np.ones(self.n_particles) / self.n_particles
 
     def predict(self):
+        # Move each particle through the transition function and add process noise.
         noise = np.random.randn(*self.particles.shape) * self.process_noise
         self.particles = self.transition_fn(self.particles) + noise
         return self.particles
 
     def update(self, observation):
         observation = np.asarray(observation)
+        # Weight particles by how likely the observation is under each particle.
         likelihoods = np.exp(-0.5 * np.sum((self.observation_fn(self.particles) - observation) ** 2, axis=-1) / self.observation_noise)
         self.weights *= likelihoods
         self.weights += 1e-12

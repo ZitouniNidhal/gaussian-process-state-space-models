@@ -18,12 +18,14 @@ class KalmanFilter:
         self.covariance = np.asarray(initial_covariance)
 
     def predict(self):
+        # Predict the next state and uncertainty before seeing the next measurement.
         self.state = self.transition @ self.state
         self.covariance = self.transition @ self.covariance @ self.transition.T + self.process_noise
         return self.state, self.covariance
 
     def update(self, measurement):
         measurement = np.asarray(measurement)
+        # Compute the Kalman gain and correct the state estimate.
         S = self.observation @ self.covariance @ self.observation.T + self.observation_noise
         K = self.covariance @ self.observation.T @ np.linalg.inv(S)
         innovation = measurement - self.observation @ self.state

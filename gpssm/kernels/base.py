@@ -18,6 +18,7 @@ class Kernel(ABC):
     def _ensure_2d(self, X):
         X = np.asarray(X)
         if X.ndim == 1:
+            # Convert 1D arrays into a column vector for kernel math.
             X = X.reshape(-1, 1)
         return X
 

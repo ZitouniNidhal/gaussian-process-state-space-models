@@ -33,6 +33,7 @@ class OnlineGPModel(BaseModel):
             return self.fit(X_new, y_new)
         self.X_train = np.vstack([self.X_train, X_new])
         self.y_train = np.vstack([self.y_train, y_new])
+        # Update the normal equations with the new data.
         self._A += X_new.T @ X_new
         self._b += X_new.T @ y_new
         self.weights = np.linalg.solve(self._A, self._b)
@@ -42,4 +43,5 @@ class OnlineGPModel(BaseModel):
         if not self.is_fitted:
             raise RuntimeError("Model must be fitted before predicting.")
         X = np.asarray(X)
+        # Multiply features by learned weights to get predictions.
         return X @ self.weights

@@ -1,23 +1,28 @@
 # gaussian-process-state-space-models
 
-A lightweight Python package for Gaussian process state space models (GPSSMs), inference tools, filters, and visualization helpers.
+This project is a compact Python package for building Gaussian process state space models.
+It also includes support for synthetic datasets, filters, model classes, and simple visualization helpers.
 
 ## Features
 
-- Kernel implementations: RBF, Matern, Polynomial, Spectral Mixture
-- Dataset generators for synthetic and real-world examples
-- State-space filters: Kalman and particle filters
-- Inference utilities: ELBO, inducing point selection, recognition networks
-- Model abstractions for GPSSMs, linear state-space and variational workflows
-- Basic benchmarking and tutorial documentation
+- Kernel functions: RBF, Matern, Polynomial, Spectral Mixture
+- Synthetic and real-world dataset utilities
+- Kalman and particle filter implementations
+- Variational inference support and recognition helpers
+- Model classes for GPSSMs, online learning, linear state-space systems, and free-form GP models
+- Example scripts and tutorial documentation
 
 ## Installation
 
+Install the package so you can use it from Python and update it as you work:
+
 ```bash
-python -m pip install .
+python -m pip install -e .
 ```
 
 ## Quick start
+
+Use the package to generate data, train a model, and get predictions.
 
 ```python
 from gpssm import models, datasets
@@ -49,22 +54,22 @@ model.fit(X, y)
 predictions = model.predict(X)
 ```
 
-## Documentation
-
-See `docs/source/index.rst` for documentation sources and tutorials.
-
 ## Tests
 
 Run the unit tests with:
 
 ```bash
-python -m pytest
+python -m pytest -q
 ```
 
 ## Scripts
 
-Train a model using the training script:
+Train a model using the sample training script:
 
 ```bash
 python scripts/training/train.py --model variational --kernel matern --n-points 120
 ```
+
+## Documentation
+
+Read `docs/source/index.rst` for project documentation and tutorial pages.

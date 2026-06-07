@@ -20,6 +20,7 @@ class GaussianProcessStateSpaceModel(BaseModel):
         y = np.asarray(y)
         self.X_train = X
         self.y_train = y
+        # Build the training kernel matrix and add observation noise.
         K = self.kernel(X) + self.noise_variance * np.eye(len(X))
         self.K_inv = np.linalg.inv(K)
         self.alpha = self.K_inv @ y
@@ -30,6 +31,7 @@ class GaussianProcessStateSpaceModel(BaseModel):
         if not self.is_fitted:
             raise RuntimeError("Model must be fitted before predicting.")
         X = np.asarray(X)
+        # Compute the covariance between test and training points.
         K_star = self.kernel(X, self.X_train)
         return K_star @ self.alpha
 
