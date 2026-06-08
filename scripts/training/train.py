@@ -35,6 +35,7 @@ def main():
     parser.add_argument("--n-points", type=int, default=100)
     parser.add_argument("--model", type=str, default="gpssm", choices=MODEL_CLASSES)
     parser.add_argument("--kernel", type=str, default="rbf", choices=KERNEL_CLASSES)
+    parser.add_argument("--save-model", type=str, default=None, help="Path to save the trained model (pickle)")
     args = parser.parse_args()
 
     X, y = generate_synthetic_linear(args.n_points)
@@ -42,6 +43,12 @@ def main():
     model = build_model(args.model, kernel)
     model.fit(X, y)
     print(f"Trained {args.model} model with {args.kernel} kernel on {args.n_points} points.")
+    if args.save_model:
+        try:
+            model.save(args.save_model)
+            print(f"Saved model to {args.save_model}")
+        except Exception as e:
+            print(f"Failed to save model: {e}")
 
 if __name__ == "__main__":
     main()
