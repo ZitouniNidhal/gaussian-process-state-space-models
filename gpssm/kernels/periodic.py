@@ -25,12 +25,19 @@ class PeriodicKernel(Kernel):
         if Y is None:
             Y = X
         Y = np.atleast_2d(Y)
-        # pairwise absolute difference in 1D columns
-        dists = np.abs(X[:, None] - Y[None, :])
+        # Ensure shape (n, d) and (m, d)
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+        if Y.ndim == 1:
+            Y = Y.reshape(-1, 1)
+        # pairwise Euclidean distances over last axis -> shape (n, m)
+        diff = X[:, None, :] - Y[None, :, :]
+        dists = np.linalg.norm(diff, axis=2)
         # compute periodic distance
         arg = np.pi * dists / self.period
         sin2 = np.sin(arg) ** 2
-        return self.variance * np.exp(-2.0 * sin2 / (self.lengthscale ** 2))
+        K = self.variance * np.exp(-2.0 * sin2 / (self.lengthscale ** 2))
+        return K
 
     def diag(self, X):
         X = np.atleast_2d(X)
