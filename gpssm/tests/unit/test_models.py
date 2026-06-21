@@ -27,6 +27,33 @@ def test_gaussian_process_state_space_model_uncertainty():
     assert np.all(var >= 0)
 
 
+def test_gpssm_log_marginal_likelihood():
+    kernel = RBFKernel()
+    X = np.linspace(0, 1, 10).reshape(-1, 1)
+    y = np.sin(X)
+    model = GaussianProcessStateSpaceModel(kernel=kernel)
+    model.fit(X, y)
+    lml = model.log_marginal_likelihood()
+    assert isinstance(lml, float)
+    assert not np.isnan(lml)
+
+
+def test_gpssm_optimize_hyperparameters():
+    kernel = RBFKernel(variance=1.0, lengthscale=1.0)
+    X = np.linspace(0, 1, 10).reshape(-1, 1)
+    y = np.sin(X)
+    model = GaussianProcessStateSpaceModel(kernel=kernel)
+    model.fit(X, y)
+    initial_lml = model.log_marginal_likelihood()
+    
+    # Optimize hyperparameters
+    model.optimize_hyperparameters(n_restarts=2)
+    opt_lml = model.log_marginal_likelihood()
+    
+    # The optimized likelihood should be higher than or equal to initial
+    assert opt_lml >= initial_lml - 1e-5
+
+
 def test_variational_gp_model_predict_uncertainty():
     kernel = RBFKernel()
     X = np.linspace(0, 1, 15).reshape(-1, 1)
@@ -37,6 +64,7 @@ def test_variational_gp_model_predict_uncertainty():
     assert mean.shape == (15, 1)
     assert var.shape == (15, 1)
     assert np.all(var >= 0)
+    assert model.elbo_ is not None
 
 
 def test_free_form_model_predict():
@@ -47,6 +75,17 @@ def test_free_form_model_predict():
     preds = model.predict(X)
     assert preds.shape == y.shape
     assert np.all(np.isfinite(preds))
+
+
+def test_free_form_uncertainty():
+    model = FreeFormGPModel()
+    X = np.linspace(0, 5, 20).reshape(-1, 1)
+    y = np.sin(X)
+    model.fit(X, y)
+    mean, var = model.predict_with_uncertainty(X)
+    assert mean.shape == (20, 1)
+    assert var.shape == (20, 1)
+    assert np.all(var >= 0)
 
 
 def test_online_model_update():
@@ -60,6 +99,17 @@ def test_online_model_update():
     preds = model.predict(new_X)
     assert preds.shape == new_y.shape
     assert np.all(np.isfinite(preds))
+
+
+def test_online_uncertainty():
+    model = OnlineGPModel(lambda_reg=1e-3)
+    X = np.linspace(0, 1, 10).reshape(-1, 1)
+    y = np.sin(X)
+    model.fit(X, y)
+    mean, var = model.predict_with_uncertainty(X)
+    assert mean.shape == (10, 1)
+    assert var.shape == (10, 1)
+    assert np.all(var >= 0)
 
 
 def test_linear_state_space_simulate():
