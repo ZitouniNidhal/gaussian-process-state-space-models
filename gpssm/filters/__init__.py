@@ -2,5 +2,6 @@
 
 from .kalman import KalmanFilter
 from .particle import ParticleFilter
+from .ekf import ExtendedKalmanFilter
 
-__all__ = ["KalmanFilter", "ParticleFilter"]
+__all__ = ["KalmanFilter", "ParticleFilter", "ExtendedKalmanFilter"]
