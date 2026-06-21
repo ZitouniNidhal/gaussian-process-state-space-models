@@ -5,12 +5,13 @@ It also includes support for synthetic datasets, filters, model classes, and sim
 
 ## Features
 
-- Kernel functions: RBF, Matern, Polynomial, Spectral Mixture
-- Synthetic and real-world dataset utilities
-- Kalman and particle filter implementations
-- Variational inference support and recognition helpers
-- Model classes for GPSSMs, online learning, linear state-space systems, and free-form GP models
-- Example scripts and tutorial documentation
+- **Kernel functions**: RBF (with ARD support), Matern, Polynomial, Spectral Mixture, Periodic, and Composite (Sum & Product) kernels
+- **Synthetic datasets**: Linear, Nonlinear, Lorenz-63 chaotic system, Pendulum, and GP prior sample generators
+- **Filters**: Kalman, Extended Kalman (EKF), and Particle Filter implementations (with RTS smoother and ESS adaptive resampling)
+- **Variational inference**: Titsias optimal variational GP parameter learning, KL divergence computation, and k-means inducing point selection
+- **Model classes**: GPSSMs (with Cholesky stabilization and hyperparameter tuning), Online learning (with recursive Woodbury matrix updates), linear state-space systems, and free-form GP models
+- **Utilities**: Diagnostic criteria (positive definite check, conditioning) and evaluation metrics (CRPS, R², MAE, RMSE, NLL)
+- **Example scripts and tutorial documentation**
 
 ## Installation
 
@@ -24,34 +25,42 @@ python -m pip install -e .
 
 Use the package to generate data, train a model, and get predictions.
 
+### GPSSM with Hyperparameter Optimization
 ```python
 from gpssm import models, datasets
 from gpssm.kernels import RBFKernel
 
 X, y = datasets.generate_synthetic_linear(100)
-model = models.GaussianProcessStateSpaceModel(kernel=RBFKernel())
+# Initialize GPSSM
+model = models.GaussianProcessStateSpaceModel(kernel=RBFKernel(variance=1.0, lengthscale=1.0))
 model.fit(X, y)
-predictions = model.predict(X)
+
+# Optimize lengthscale, variance, and noise variance
+model.optimize_hyperparameters(n_restarts=3)
+predictions, variance = model.predict_with_uncertainty(X)
 ```
 
+### Composite Kernels
 ```python
-from gpssm import models, datasets
-from gpssm.kernels import RBFKernel
+from gpssm.kernels import RBFKernel, PeriodicKernel
 
-X, y = datasets.generate_synthetic_linear(100)
-model = models.VariationalGPModel(kernel=RBFKernel(), n_inducing=15)
-model.fit(X, y)
-mean, variance = model.predict_with_uncertainty(X)
+# Construct composite kernel
+composite_kernel = RBFKernel(variance=1.0, lengthscale=2.0) + PeriodicKernel(variance=0.5, period=1.0)
 ```
 
+### Extended Kalman Filter (EKF)
 ```python
-from gpssm import models, datasets
-from gpssm.kernels import RBFKernel
+import numpy as np
+from gpssm.filters import ExtendedKalmanFilter
 
-X, y = datasets.generate_synthetic_linear(100)
-model = models.FreeFormGPModel()
-model.fit(X, y)
-predictions = model.predict(X)
+# EKF on nonlinear system
+process_noise = np.array([[0.01]])
+obs_noise = np.array([[0.05]])
+ekf = ExtendedKalmanFilter(process_noise, obs_noise)
+ekf.initialize(np.array([[1.0]]), np.array([[0.1]]))
+
+# Transition function f(x)
+ekf.predict(transition_fn=lambda x: 1.1 * x + np.sin(x))
 ```
 
 ## Tests
