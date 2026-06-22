@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: gpssm-app
+    volumes:
+      - .:/app
+    ports:
+      - "8888:8888"
+    environment:
+      - JUPYTER_TOKEN=gpssm_token
+    command: pytest
+
+  notebook:
+    build: .
+    container_name: gpssm-notebook
+    volumes:
+      - .:/app
+    ports:
+      - "8888:8888"
+    environment:
+      - JUPYTER_TOKEN=gpssm_token
+    command: jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root
